@@ -1,0 +1,60 @@
+To create a Django project and set up an HTML file, follow these steps:
+
+1. Install Django:
+    Ensure Django is installed. Run:
+    pip install django
+
+2. Create a Django Project:
+    Run the following command to create a new project:
+    django-admin startproject myproject
+    cd myproject
+
+3. Create a Django App:
+    Inside the project directory, create an app:
+    python manage.py startapp myapp
+
+4. Register the App:
+    Add the app to the `INSTALLED_APPS` list in `myproject/settings.py`:
+    INSTALLED_APPS = [
+         ...
+         'myapp',
+    ]
+
+5. Create a View:
+    In `myapp/views.py`, create a view function:
+    
+    def home(request):
+         return render(request, 'home.html')
+
+
+from django.contrib import admin
+from django.urls import path
+from myapp.views import *
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',index),
+]
+
+7. Create an HTML Template:
+    
+    Inside the `myapp` directory, create a `templates` folder and then a `home.html` file:
+    
+    <!DOCTYPE html>
+    <html>
+    <head>
+         <title>Home Page</title>
+    </head>
+    <body>
+         <h1>Welcome to Django!</h1>
+    </body>
+    </html>
+
+8. Run the Server:
+    Start the development server:
+    python manage.py runserver
+
+
+9. Access the Application:
+    Open your browser and go to `http://127.0.0.1:8000/` to see your HTML page.
