@@ -1,3 +1,135 @@
-<h1>Hello Abrar</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI GitHub Project Finder</title>
 
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- Your Static Files -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="{% static 'js/script.js' %}"></script>
+</head>
+
+<body>
+    <div id="splash" role="alert" aria-live="assertive" aria-label="Loading AI GitHub Project Finder">
+        <span>🚀</span>
+        AI GitHub Project Finder
+    </div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto p-10 space-y-12 opacity-0" id="mainContent" aria-hidden="true">
+        <header class="text-center max-w-4xl mx-auto">
+            <h1 class="text-5xl flex justify-center items-center gap-3 select-none">
+                <span class="text-5xl animate-bounce" aria-hidden="true" style="color:#06b6d4;">🚀</span>
+                <span class="underline-animate">AI GitHub Project Finder</span>
+            </h1>
+            <p class="mt-4 text-2xl font-medium tracking-wide text-slate-300">
+                Find smart projects, faster.
+            </p>
+        </header>
+
+        <form class="max-w-4xl mx-auto flex gap-6 shadow-lg rounded-xl overflow-hidden" role="search"
+            aria-label="Search projects">
+            <input type="search" placeholder="e.g. Fintech, AI image gen" aria-label="Search input"
+                class="flex-grow px-6 py-5 text-lg rounded-l-xl border border-r-0 border-slate-600 bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-cyan-400 focus:border-cyan-500 transition shadow-inner" />
+            <button type="submit"
+                class="btn-gradient px-8 py-5 rounded-r-xl text-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-cyan-500"
+                aria-label="Search Projects">
+                Search Projects
+            </button>
+        </form>
+
+        <section class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
+            aria-label="Project listings">
+            <article tabindex="0"
+                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-cyan-500 focus:outline-none"
+                aria-labelledby="proj1-title">
+                <div>
+                    <h2 id="proj1-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
+                        PayRoll
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
+                        A payroll managennent system for small businesses
+                    </p>
+                    <span
+                        class="inline-block tag-beginner rounded-md px-4 py-2 select-none tracking-wide">Beginner</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
+                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
+                    <span>482 4pr 2024</span>
+                </div>
+            </article>
+
+            <article tabindex="0"
+                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-yellow-500 focus:outline-none"
+                aria-labelledby="proj2-title">
+                <div>
+                    <h2 id="proj2-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
+                        Deep Image Enhancer
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
+                        Deep learning-based tool for Image enhancement
+                    </p>
+                    <span
+                        class="inline-block tag-intermediate rounded-md px-4 py-2 select-none tracking-wide">Intermrediate</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
+                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
+                    <span>2.1k Mar 2024</span>
+                </div>
+            </article>
+
+            <article tabindex="0"
+                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-green-500 focus:outline-none"
+                aria-labelledby="proj3-title">
+                <div>
+                    <h2 id="proj3-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
+                        Banking App
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
+                        Open source mbile banking application
+                    </p>
+                    <span
+                        class="inline-block tag-beginner rounded-md px-4 py-2 select-none tracking-wide">Beginner</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
+                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
+                    <span>815 Jan 2024</span>
+                </div>
+            </article>
+
+            <article tabindex="0"
+                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-red-500 focus:outline-none"
+                aria-labelledby="proj4-title">
+                <div>
+                    <h2 id="proj4-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
+                        Generative Adversarial Network
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
+                        Implementation of a generative adversarlinetwork
+                    </p>
+                    <span
+                        class="inline-block tag-advanced rounded-md px-4 py-2 select-none tracking-wide">Advanced</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
+                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
+                    <span>3.3k May 2023</span>
+                </div>
+            </article>
+        </section>
+    </div>
+
+    <script src="./js/script.js"></script>
+</body>
+
+</html>
