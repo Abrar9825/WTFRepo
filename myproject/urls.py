@@ -22,4 +22,6 @@ from myapp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',index),
+    path('github_and_gemini/', github_and_gemini, name='github_and_gemini'),
+
 ]
