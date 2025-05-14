@@ -4,6 +4,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import requests
 import os
+from django.conf import settings
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,9 +20,8 @@ def index(request):
 def github_and_gemini(request):
 
     promptforgenrate = "AI timetable generator in machine learning, data science, and AI"
-    
+    #promptforgenrate = request.GET.get("prompt", ...)
     prompt = request.GET.get("prompt", f"{promptforgenrate} short and concise keywords to find repos easily")  # Default prompt if none provided
-
     try:
         # Call Google Gemini to enhance the prompt
         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -38,13 +39,23 @@ def github_and_gemini(request):
                     "language": "Python", 
                     "sort": "stars"}
         )
+        repos=github_response.json().get("items",[])[:5]
+        filtered_repos=[
+            {
+                "name":repo["name"],
+                "description": " ".join(repo["description"].split()[:8]) ,
+                "url":repo["html_url"],
+                "stars":repo["stargazers_count"],
+                "created_at":repo["created_at"]
+            }
+            for repo in repos
+        ]
 
         # Return both Gemini and GitHub responses
         return JsonResponse({
             "enhanced_prompt": enhanced_prompt,
             "cleaned_prompt": clean_prompt,
-            "github_response": github_response.json()
+            "repositories":filtered_repos
         }, status=github_response.status_code)
-
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

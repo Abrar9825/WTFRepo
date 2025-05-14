@@ -38,9 +38,9 @@
             </p>
         </header>
 
-        <form class="max-w-4xl mx-auto flex gap-6 shadow-lg rounded-xl overflow-hidden" role="search"
+        <form id="searchForm" class="max-w-4xl mx-auto flex gap-6 shadow-lg rounded-xl overflow-hidden" role="search"
             aria-label="Search projects">
-            <input type="search" placeholder="e.g. Fintech, AI image gen" aria-label="Search input"
+            <input id="searchInput" type="search" placeholder="e.g. Fintech, AI image gen" aria-label="Search input"
                 class="flex-grow px-6 py-5 text-lg rounded-l-xl border border-r-0 border-slate-600 bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-cyan-400 focus:border-cyan-500 transition shadow-inner" />
             <button type="submit"
                 class="btn-gradient px-8 py-5 rounded-r-xl text-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-cyan-500"
@@ -49,8 +49,8 @@
             </button>
         </form>
 
-        <section class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
-            aria-label="Project listings">
+        <section id="results" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10" aria-label="Project listings">
+        <!-- 
             <article tabindex="0"
                 class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-cyan-500 focus:outline-none"
                 aria-labelledby="proj1-title">
@@ -125,11 +125,70 @@
                     <i class="fas fa-star star-icon" aria-hidden="true"></i>
                     <span>3.3k May 2023</span>
                 </div>
-            </article>
+            </article>-->
         </section>
     </div>
 
-    <script src="./js/script.js"></script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("searchInput");
+    const resultsSection = document.getElementById("results");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const query = input.value.trim();
+        if (!query) return;
+
+        // Show loading message
+        resultsSection.innerHTML = `
+            <p class="col-span-full text-center text-slate-400 text-xl">🔍 Searching...</p>
+        `;
+
+        try {
+            const res = await fetch(`/github_and_gemini/?prompt=${encodeURIComponent(query)}`);
+            const data = await res.json();
+
+            const repos = data.repositories || [];
+
+            if (repos.length === 0) {
+                resultsSection.innerHTML = `
+                    <p class="col-span-full text-center text-slate-400 text-xl">No repositories found.</p>
+                `;
+                return;
+            }
+
+            // Inject each repo as a card
+            resultsSection.innerHTML = repos.map(repo => `
+                <article class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent hover:ring-cyan-500 focus:outline-none">
+                    <div>
+                        <h2 class="font-extrabold text-2xl leading-tight mb-3 text-slate-100">
+                            ${repo.name}
+                        </h2>
+                        <p class="text-slate-300 text-lg leading-relaxed mb-6">
+                            ${repo.description || "No description provided."}
+                        </p>
+                        <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
+                        <i class="fas fa-star"></i>
+                        <span>${repo.stars.toLocaleString()} stars — ${new Date(repo.created_at).toLocaleDateString()}</span>
+                    </div>
+                </article>
+            `).join("");
+
+        } catch (error) {
+            console.error(error);
+            resultsSection.innerHTML = `
+                <p class="col-span-full text-center text-red-500">Error fetching repositories. Please try again.</p>
+            `;
+        }
+    });
+});
+</script>
+
 </body>
 
 </html>
