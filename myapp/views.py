@@ -8,14 +8,12 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # Fetch GitHub token from .env
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 genai.configure(api_key=GEMINI_API_KEY)
-
 
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
-
 
 def github_and_gemini(request):
 
