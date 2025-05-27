@@ -5,85 +5,107 @@ from dotenv import load_dotenv
 import requests
 import os
 import base64
-from django.conf import settings
 
-
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-genai.configure(api_key=GEMINI_API_KEY)
 
-# Create your views here.
+# Configure Gemini
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+
 def index(request):
     return render(request, 'index.html')
 
+
 def github_and_gemini(request):
-    promptforgenrate = request.GET.get("prompt", ...)
-    prompt = request.GET.get("prompt", f"{promptforgenrate} generate short keywords to find repos easily")
+    prompt = request.GET.get("prompt", "").strip()
+
+    if not prompt:
+        return JsonResponse({"error": "Prompt is required"}, status=400)
+
+    # Enhance full user prompt intelligently (no keyword removal)
+    gemini_prompt = (
+    f"Rewrite and enhance the following user search query to be optimized for GitHub repository search. "
+    f"Focus on adding relevant programming languages, frameworks, and keywords related to the project idea. "
+    f"Use GitHub search syntax where possible, like language:python or topic:machine-learning. "
+    f"Return only a single line of text, no markdown, no explanation:\n\n{prompt}"
+)
 
     try:
-        # Call Gemini to enhance the prompt
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        enhanced_prompt = model.generate_content(prompt).text.strip()
+        enhanced_prompt = model.generate_content(gemini_prompt).text.strip()
 
-        keywords = enhanced_prompt.split()[:4]
-        clean_prompt = " ".join(keywords)
+        print("Original Prompt:", prompt)
+        print("Gemini Enhanced:", enhanced_prompt)
 
-        # GitHub API call
-        github_response = requests.get(
-            "https://api.github.com/search/repositories",
-            headers={"Authorization": f"token {GITHUB_TOKEN}"},
-            params={"q": clean_prompt, "sort": "stars"}
-        )
+        # GitHub Query
+        search_query = " ".join(enhanced_prompt.split())
 
-        if github_response.status_code != 200:
-            return JsonResponse({
-                "error": "GitHub API error",
-                "details": github_response.json()
-            }, status=github_response.status_code)
+        def search_github(query):
+            response = requests.get(
+                "https://api.github.com/search/repositories",
+                headers={"Authorization": f"token {GITHUB_TOKEN}"},
+                params={"q": query, "sort": "stars", "order": "desc"}
+            )
+            return response.json().get("items", [])[:5]
 
-        repos = github_response.json().get("items", [])[:5]
+        # Primary Search
+        repos = search_github(search_query)
+
+        # Fallback if no results
+        if not repos:
+            fallback_query = "+".join(prompt.split())
+            print("Fallback GitHub Query:", fallback_query)
+            repos = search_github(fallback_query)
+
         filtered_repos = []
 
         for repo in repos:
             owner = repo["owner"]["login"]
             repo_name = repo["name"]
+            description = repo.get("description", "") or ""
 
-            # Try to get README
+            # Try to fetch README
             readme_url = f"https://api.github.com/repos/{owner}/{repo_name}/readme"
             readme_res = requests.get(readme_url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
 
             if readme_res.status_code == 200:
-                readme_content = readme_res.json().get("content", "")
-                summary_input = base64.b64decode(readme_content).decode("utf-8")
-                summary_prompt = f"Summarize the following GitHub README:\n\n{summary_input}"
+                content = readme_res.json().get("content", "")
+                decoded = base64.b64decode(content).decode("utf-8", errors="ignore")
+                summary_prompt = f"Summarize the following GitHub README:\n\n{decoded}"
             else:
-                # Try to get important code files
+                # Try fetching key code files if README is missing
                 contents_url = f"https://api.github.com/repos/{owner}/{repo_name}/contents"
                 contents_res = requests.get(contents_url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
 
-                summary_input = "Important files:\n"
                 if contents_res.status_code == 200:
                     files = contents_res.json()
-                    important_files = [f for f in files if f["name"] in ["app.js", "server.js", "main.py", "index.js"]]
+                    key_files = [f for f in files if f["name"] in ["main.py", "app.js", "index.js", "server.js"]]
+                    code_snippets = ""
 
-                    for file in important_files:
-                        file_res = requests.get(file["download_url"])
-                        if file_res.status_code == 200:
-                            file_content = file_res.text[:1000]  # Trim for safety
-                            summary_input += f"\n\n# {file['name']}:\n{file_content}"
+                    for file in key_files:
+                        code_res = requests.get(file["download_url"])
+                        if code_res.status_code == 200:
+                            snippet = code_res.text[:1000]
+                            code_snippets += f"\n\n# {file['name']}:\n{snippet}"
 
-                    summary_prompt = f"Summarize this project based on these files:\n{summary_input}"
+                    if code_snippets:
+                        summary_prompt = f"Summarize this GitHub project based on these code files:\n{code_snippets}"
+                    else:
+                        summary_prompt = "This project has no README and no key files could be fetched."
                 else:
-                    summary_prompt = "This project has no README and its file structure could not be retrieved."
+                    summary_prompt = "This project has no README and contents could not be loaded."
 
-            # Ask Gemini to summarize
-            gemini_summary = model.generate_content(summary_prompt).text.strip()
+            try:
+                gemini_summary = model.generate_content(summary_prompt).text.strip()
+            except Exception as e:
+                gemini_summary = "Summary generation failed."
 
             filtered_repos.append({
-                "name": repo["name"],
-                "description": " ".join(repo["description"].split()[:8]) if repo["description"] else "",
+                "name": repo_name,
+                "description": " ".join(description.split()[:10]),
                 "url": repo["html_url"],
                 "stars": repo["stargazers_count"],
                 "created_at": repo["created_at"],
@@ -91,12 +113,11 @@ def github_and_gemini(request):
             })
 
         return JsonResponse({
+            "original_prompt": prompt,
             "enhanced_prompt": enhanced_prompt,
-            "cleaned_prompt": clean_prompt,
             "repositories": filtered_repos
         }, status=200)
 
     except Exception as e:
+        print("ERROR:", str(e))
         return JsonResponse({"error": str(e)}, status=500)
-
-

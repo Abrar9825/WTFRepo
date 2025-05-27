@@ -1,2 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+env/
+venv/
+ENV/
+VENV/
+*.env
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+local_settings.py
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# Node stuff (if using frontend tools)
+node_modules/
+
+# dotenv
 .env
-.gitignore
+
+# Migrations (optional: only if you want to regenerate them)
+**/migrations/*.py
+!**/migrations/__init__.py
