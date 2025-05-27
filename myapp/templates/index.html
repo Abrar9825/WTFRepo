@@ -50,145 +50,87 @@
         </form>
 
         <section id="results" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10" aria-label="Project listings">
-        <!-- 
-            <article tabindex="0"
-                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-cyan-500 focus:outline-none"
-                aria-labelledby="proj1-title">
-                <div>
-                    <h2 id="proj1-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
-                        PayRoll
-                    </h2>
-                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
-                        A payroll managennent system for small businesses
-                    </p>
-                    <span
-                        class="inline-block tag-beginner rounded-md px-4 py-2 select-none tracking-wide">Beginner</span>
-                </div>
-                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
-                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
-                    <span>482 4pr 2024</span>
-                </div>
-            </article>
-
-            <article tabindex="0"
-                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-yellow-500 focus:outline-none"
-                aria-labelledby="proj2-title">
-                <div>
-                    <h2 id="proj2-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
-                        Deep Image Enhancer
-                    </h2>
-                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
-                        Deep learning-based tool for Image enhancement
-                    </p>
-                    <span
-                        class="inline-block tag-intermediate rounded-md px-4 py-2 select-none tracking-wide">Intermrediate</span>
-                </div>
-                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
-                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
-                    <span>2.1k Mar 2024</span>
-                </div>
-            </article>
-
-            <article tabindex="0"
-                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-green-500 focus:outline-none"
-                aria-labelledby="proj3-title">
-                <div>
-                    <h2 id="proj3-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
-                        Banking App
-                    </h2>
-                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
-                        Open source mbile banking application
-                    </p>
-                    <span
-                        class="inline-block tag-beginner rounded-md px-4 py-2 select-none tracking-wide">Beginner</span>
-                </div>
-                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
-                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
-                    <span>815 Jan 2024</span>
-                </div>
-            </article>
-
-            <article tabindex="0"
-                class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent focus:ring-red-500 focus:outline-none"
-                aria-labelledby="proj4-title">
-                <div>
-                    <h2 id="proj4-title" class="font-extrabold text-2xl leading-tight mb-3 select-text text-slate-100">
-                        Generative Adversarial Network
-                    </h2>
-                    <p class="text-slate-300 text-lg leading-relaxed mb-6 select-text">
-                        Implementation of a generative adversarlinetwork
-                    </p>
-                    <span
-                        class="inline-block tag-advanced rounded-md px-4 py-2 select-none tracking-wide">Advanced</span>
-                </div>
-                <div class="flex items-center gap-3 text-slate-300 text-base mt-8 select-none">
-                    <i class="fas fa-star star-icon" aria-hidden="true"></i>
-                    <span>3.3k May 2023</span>
-                </div>
-            </article>-->
         </section>
     </div>
 
-    
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("searchForm");
-    const input = document.getElementById("searchInput");
-    const resultsSection = document.getElementById("results");
+        const form = document.getElementById("searchForm");
+        const input = document.getElementById("searchInput");
+        const resultsSection = document.getElementById("results");
 
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const query = input.value.trim();
-        if (!query) return;
-
-        // Show loading message
-        resultsSection.innerHTML = `
-            <p class="col-span-full text-center text-slate-400 text-xl">🔍 Searching...</p>
-        `;
-
-        try {
-            const res = await fetch(`/github_and_gemini/?prompt=${encodeURIComponent(query)}`);
-            const data = await res.json();
-
-            const repos = data.repositories || [];
-
-            if (repos.length === 0) {
-                resultsSection.innerHTML = `
-                    <p class="col-span-full text-center text-slate-400 text-xl">No repositories found.</p>
-                `;
-                return;
+        // Helper: Badge color classes based on level
+        function getBadgeClass(level) {
+            switch(level) {
+                case "Beginner":
+                    return "bg-green-700 text-green-100";
+                case "Intermediate":
+                    return "bg-yellow-700 text-yellow-100";
+                case "Advanced":
+                    return "bg-red-700 text-red-100";
+                default:
+                    return "bg-slate-600 text-slate-100";
             }
-
-            // Inject each repo as a card
-            resultsSection.innerHTML = repos.map(repo => `
-                <article class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent hover:ring-cyan-500 focus:outline-none">
-                    <div>
-                        <h2 class="font-extrabold text-2xl leading-tight mb-3 text-slate-100">
-                            ${repo.name}
-                        </h2>
-                        <p class="text-slate-300 text-lg leading-relaxed mb-6">
-                            ${repo.summary || "No summary provided."}
-                        </p>
-                        <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
-                    </div>
-                    <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
-                        <i class="fas fa-star"></i>
-                        <span>${repo.stars.toLocaleString()} stars — ${new Date(repo.created_at).toLocaleDateString()}</span>
-                    </div>
-                </article>
-            `).join("");
-
-        } catch (error) {
-            console.error(error);
-            resultsSection.innerHTML = `
-                <p class="col-span-full text-center text-red-500">Error fetching repositories. Please try again.</p>
-            `;
         }
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const query = input.value.trim();
+            if (!query) return;
+
+            // Show loading message
+            resultsSection.innerHTML = `
+                <p class="col-span-full text-center text-slate-400 text-xl">🔍 Searching...</p>
+            `;
+
+            try {
+                const res = await fetch(`/github_and_gemini/?prompt=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                const repos = data.repositories || [];
+
+                if (repos.length === 0) {
+                    resultsSection.innerHTML = `
+                        <p class="col-span-full text-center text-slate-400 text-xl">No repositories found.</p>
+                    `;
+                    return;
+                }
+
+                // Inject each repo as a card
+                resultsSection.innerHTML = repos.map(repo => `
+                    <article class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent hover:ring-cyan-500 focus:outline-none">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${getBadgeClass(repo.level)}" title="Project Level">${repo.level || "Unknown"}</span>
+                            </div>
+                            <h2 class="font-extrabold text-2xl leading-tight mb-3 text-slate-100">
+                                ${repo.name}
+                            </h2>
+                            <p class="text-slate-300 text-lg leading-relaxed mb-2">
+                                ${repo.description || "No description provided."}
+                            </p>
+                            <div class="text-slate-400 text-sm mb-4 italic border-l-4 border-cyan-600 pl-3 whitespace-pre-line">
+                                ${repo.summary ? repo.summary : "No summary available."}
+                            </div>
+                            <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
+                        </div>
+                        <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
+                            <i class="fas fa-star"></i>
+                            <span>${repo.stars.toLocaleString()} stars — ${new Date(repo.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </article>
+                `).join("");
+
+            } catch (error) {
+                console.error(error);
+                resultsSection.innerHTML = `
+                    <p class="col-span-full text-center text-red-500">Error fetching repositories. Please try again.</p>
+                `;
+            }
+        });
     });
-});
-</script>
+    </script>
 
 </body>
-
 </html>
