@@ -19,6 +19,36 @@
     <!-- Your Static Files -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     <script src="{% static 'js/script.js' %}"></script>
+    <style>
+.flip-card {
+  perspective: 1000px;
+}
+.flip-card-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.flip-card-front {
+  z-index: 2;
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+</style>
+
 </head>
 
 <body>
@@ -98,29 +128,40 @@
                 }
 
                 // Inject each repo as a card
-                resultsSection.innerHTML = repos.map(repo => `
-                    <article class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent hover:ring-cyan-500 focus:outline-none">
-                        <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${getBadgeClass(repo.level)}" title="Project Level">${repo.level || "Unknown"}</span>
-                            </div>
-                            <h2 class="font-extrabold text-2xl leading-tight mb-3 text-slate-100">
-                                ${repo.name}
-                            </h2>
-                            <p class="text-slate-300 text-lg leading-relaxed mb-2">
-                                ${repo.description || "No description provided."}
-                            </p>
-                            <div class="text-slate-400 text-sm mb-4 italic border-l-4 border-cyan-600 pl-3 whitespace-pre-line">
-                                ${repo.summary ? repo.summary : "No summary available."}
-                            </div>
-                            <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
-                        </div>
-                        <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
-                            <i class="fas fa-star"></i>
-                            <span>${repo.stars.toLocaleString()} stars — ${new Date(repo.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </article>
-                `).join("");
+                resultsSection.innerHTML = repos.map((repo, index) => {
+    const shortSummary = repo.summary && repo.summary.length > 200
+        ? repo.summary.slice(0, 200) + "..."
+        : repo.summary || "No summary available.";
+
+    const encodedSummary = encodeURIComponent(repo.summary || "");
+
+    return `
+        <article class="glass-card p-8 flex flex-col justify-between h-full shadow-lg ring-1 ring-transparent hover:ring-cyan-500 focus:outline-none">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${getBadgeClass(repo.level)}" title="Project Level">${repo.level || "Unknown"}</span>
+                </div>
+                <h2 class="font-extrabold text-2xl leading-tight mb-3 text-slate-100">
+                    ${repo.name}
+                </h2>
+                <p class="text-slate-300 text-lg leading-relaxed mb-2">
+                    ${repo.description || "No description provided."}
+                </p>
+                <div class="text-slate-400 text-sm mb-4 italic border-l-4 border-cyan-600 pl-3 whitespace-pre-line">
+                    ${shortSummary}
+                    ${repo.summary && repo.summary.length > 200 ? `
+                        <a href="/full_summary/?summary=${encodedSummary}" class="text-cyan-400 underline ml-2">Read more</a>
+                    ` : ""}
+                </div>
+                <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
+            </div>
+            <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
+                <i class="fas fa-star"></i>
+                <span>${repo.stars.toLocaleString()} stars — ${new Date(repo.created_at).toLocaleDateString()}</span>
+            </div>
+        </article>
+    `;
+}).join("");
 
             } catch (error) {
                 console.error(error);

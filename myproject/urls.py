@@ -22,6 +22,7 @@ from myapp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',index),
+    path('full_summary/',full_summary_view, name='full_summary'),
     path('github_and_gemini/', github_and_gemini, name='github_and_gemini'),
 
 ]
