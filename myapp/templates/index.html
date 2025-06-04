@@ -147,12 +147,9 @@
                 <p class="text-slate-300 text-lg leading-relaxed mb-2">
                     ${repo.description || "No description provided."}
                 </p>
-                <div class="text-slate-400 text-sm mb-4 italic border-l-4 border-cyan-600 pl-3 whitespace-pre-line">
-                    ${shortSummary}
-                    ${repo.summary && repo.summary.length > 200 ? `
-                        <a href="/full_summary/?summary=${encodedSummary}" class="text-cyan-400 underline ml-2">Read more</a>
-                    ` : ""}
-                </div>
+               <a href="/full_summary/?summary=${encodedSummary}" class="block text-slate-400 text-sm mb-4 italic border-l-4 border-cyan-600 pl-3 whitespace-pre-line hover:bg-cyan-950 transition">
+    ${shortSummary}
+</a>
                 <a href="${repo.url}" target="_blank" class="text-cyan-400 underline">View Repo</a>
             </div>
             <div class="flex items-center gap-3 text-slate-300 text-base mt-6">
