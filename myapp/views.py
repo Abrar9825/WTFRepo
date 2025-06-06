@@ -33,8 +33,6 @@ def get_level_by_structure(contents):
         return "Advanced"
     return "Intermediate"
 
-from django.shortcuts import render
-
 def full_summary_view(request):
     summary = request.GET.get('summary', 'No summary provided.')
     return render(request, 'full_summary.html', {'summary': summary})
