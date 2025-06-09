@@ -101,7 +101,7 @@ def github_and_gemini(request):
                 summary_prompt = f"""
 You are summarizing a GitHub project for devs who want clarity fast.
 
-Give a 3-paragraph summary in plain text, no markdown, no bold, no formatting junk. Just real words. It should sound like a developer explaining the project to a friend.
+Give a 2-paragraph summary in plain text, no markdown, no bold, no formatting junk. Just real words. It should sound like a developer explaining the project to a friend.
 
 Then add:
 - Tech stack (simple comma-separated list)
