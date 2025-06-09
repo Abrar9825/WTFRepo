@@ -1,22 +1,21 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Full Summary</title>
-
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-
-  <!-- Custom Styles -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
     }
     .glass-card {
       background: rgba(255, 255, 255, 0.05);
@@ -24,34 +23,83 @@
       -webkit-backdrop-filter: blur(12px);
       border-radius: 1rem;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
     }
     .btn-back {
       transition: all 0.3s ease;
+      cursor: pointer;
     }
     .btn-back:hover {
       background-color: #0e7490;
-      color: white;
+      color: white !important;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    #loader {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 50;
+      transform: translate(-50%, -50%);
+    }
+    .lds-dual-ring {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-dual-ring:after {
+      content: " ";
+      display: block;
+      width: 64px;
+      height: 64px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #22d3ee;
+      border-color: #22d3ee transparent #38bdf8 transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
     }
   </style>
 </head>
-
-<body class="bg-gray-900 text-white py-16 px-6 min-h-screen flex items-center justify-center">
-
-  <div class="glass-card max-w-4xl w-full p-10 shadow-xl">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
+  <!-- Loader (hidden by default, shown on load) -->
+  <div id="loader" style="display:none;">
+    <div class="lds-dual-ring"></div>
+    <div class="mt-6 text-cyan-300 font-semibold text-xl">Loading Summary...</div>
+  </div>
+  <div class="glass-card max-w-4xl w-full mx-auto p-10 shadow-xl" id="mainContent" style="display:none;">
     <h1 class="text-4xl font-bold mb-6 text-cyan-400 text-center">Full Project Summary</h1>
-
     <div class="whitespace-pre-wrap text-lg text-slate-200 leading-relaxed border-l-4 border-cyan-500 pl-5">
       {{ summary }}
     </div>
-
     <div class="mt-10 text-center">
-      <a href="javascript:history.back()" class="btn-back inline-block text-cyan-400 text-lg underline underline-offset-4 hover:no-underline">
-  ← Back to search
-</a>
-
+      <button type="button"
+        onclick="
+          if(document.referrer && !document.referrer.includes('/full_summary')) {
+            window.history.back();
+          } else {
+            window.location.href = '/';
+          }
+        "
+        class="btn-back inline-block text-cyan-400 text-lg underline underline-offset-4 hover:no-underline">
+        &larr; Back to search
+      </button>
     </div>
   </div>
-
+  <script>
+    // Show loader on load, then show main content after DOM ready
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('loader').style.display = 'block';
+      setTimeout(function() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+      }, 400);
+    });
+  </script>
 </body>
-
 </html>
