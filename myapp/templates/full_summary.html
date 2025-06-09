@@ -79,16 +79,10 @@
     </div>
     <div class="mt-10 text-center">
       <button type="button"
-        onclick="
-          if(document.referrer && !document.referrer.includes('/full_summary')) {
-            window.history.back();
-          } else {
-            window.location.href = '/';
-          }
-        "
-        class="btn-back inline-block text-cyan-400 text-lg underline underline-offset-4 hover:no-underline">
-        &larr; Back to search
-      </button>
+           onclick="window.history.back();"
+           class="btn-back inline-block text-cyan-400 text-lg underline underline-offset-4 hover:no-underline">
+           &larr; Back to search
+        </button>
     </div>
   </div>
   <script>
