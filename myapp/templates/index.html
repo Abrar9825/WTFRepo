@@ -110,6 +110,7 @@
       align-items: center;
       justify-content: center;
       height: 330px;
+      margin-left: 500px;
     }
     .loader {
       display: flex;
@@ -137,6 +138,8 @@
       letter-spacing: .06em;
       text-shadow: 0 2px 20px #0ea5e988;
       opacity: 0.88;
+      white-space: nowrap;      /* Prevent text wrapping */
+      text-align: center;
     }
     @media (max-width: 1024px) {
       .grid-cols-lg-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
